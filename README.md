@@ -8,13 +8,13 @@ Application mobile moderne développée avec **Flutter** présentant le profil p
 
 <div align="center">
 
-| Page de Connexion | Menu & Navigation | Mon CV (Accueil) |
+| Mon CV (Accueil) | Cercle Familial | Ajout d'un membre |
 | :---: | :---: | :---: |
-| <img src="picture/01_connexion.jpg" width="220" alt="Page de Connexion"/> | <img src="picture/02_drawer_navigation.jpg" width="220" alt="Drawer Navigation"/> | <img src="picture/03_cv_accueil.jpg" width="220" alt="Mon CV Accueil"/> |
+| ![Mon CV](screenshots/captures%20(4).png) | ![Liste des membres](screenshots/captures%20(2).png) | ![Ajout d'un membre](screenshots/captures%20(5).png) |
 
-| Cercle Familial | Détail Famille | Coordonnées & Contact |
-| :---: | :---: | :---: |
-| <img src="picture/04_famille_liste.jpg" width="220" alt="Cercle Familial"/> | <img src="picture/05_famille_detail.jpg" width="220" alt="Détail Famille"/> | <img src="picture/06_contact_coordonnees.jpg" width="220" alt="Mes Coordonnées"/> |
+| Coordonnées & Contact | Données dans phpMyAdmin |
+| :---: | :---: |
+| ![Mes coordonnées](screenshots/captures%20(3).png) | ![phpMyAdmin](screenshots/captures%20(1).png) |
 
 </div>
 
@@ -84,3 +84,21 @@ flutter pub get
 ```bash
 flutter run
 ```
+
+## 🔗 Connexion à l'API REST
+
+L'application utilise l'API PHP située à
+`http://localhost:8080/api-test/public`.
+
+Pour Android Emulator, l'adresse par défaut est automatiquement configurée
+pour `10.0.2.2:8080`, car `localhost` représente l'émulateur lui-même.
+
+Pour utiliser une autre machine ou appareil physique :
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://ADRESSE_PC:8080/api-test/public
+```
+
+Les écrans permettent de se connecter, lister, ajouter, modifier et supprimer
+les membres de la famille via les endpoints `/accounts/login` et
+`/famille-membres`.

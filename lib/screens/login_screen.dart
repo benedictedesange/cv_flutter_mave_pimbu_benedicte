@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'main_navigation_screen.dart';
 import '../widgets/app_avatar.dart';
+import '../services/api_service.dart';
 
 /// Page d'authentification initiale donnant accès au portfolio et CV de Bénédicte.
 class LoginScreen extends StatefulWidget {
@@ -14,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final ApiService _api = ApiService();
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -24,35 +27,38 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() async {
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // Simulation fluide pour une transition agréable
-      await Future.delayed(const Duration(milliseconds: 600));
-
-      if (!mounted) return;
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      final username = _usernameController.text.trim();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Bienvenue dans mon application CV, $username !'),
-          backgroundColor: Colors.teal.shade800,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-      );
+      setState(() => _isLoading = true);
+      try {
+        await _api.login(
+          email: _usernameController.text.trim(),
+          password: _passwordController.text,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Bienvenue dans mon application CV !'),
+            backgroundColor: Colors.teal.shade800,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+        );
+      } catch (error) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.toString()),
+            backgroundColor: Colors.red.shade700,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -77,7 +83,10 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Center(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
               child: Card(
                 elevation: 12,
                 shape: RoundedRectangleBorder(
@@ -124,11 +133,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Champ Identifiant
                         TextFormField(
                           controller: _usernameController,
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            labelText: 'Identifiant',
-                            hintText: 'Votre nom ou email',
-                            prefixIcon: const Icon(Icons.person_outline_rounded),
+                            labelText: 'Email',
+                            hintText: 'Votre adresse email',
+                            prefixIcon: const Icon(
+                              Icons.person_outline_rounded,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -137,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Veuillez saisir votre identifiant';
+                              return 'Veuillez saisir votre email';
                             }
                             return null;
                           },
@@ -175,8 +186,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (value == null || value.trim().isEmpty) {
                               return 'Veuillez saisir votre mot de passe';
                             }
-                            if (value.length < 4) {
-                              return 'Le mot de passe doit comporter au moins 4 caractères';
+                            if (value.length < 6) {
+                              return 'Le mot de passe doit comporter au moins 6 caractères';
                             }
                             return null;
                           },
@@ -204,7 +215,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
+                                        Colors.white,
+                                      ),
                                     ),
                                   )
                                 : const Row(
@@ -229,19 +241,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Encart convivial d'information
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.teal.shade50,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info_outline_rounded,
-                                  size: 18, color: Colors.teal.shade800),
+                              Icon(
+                                Icons.info_outline_rounded,
+                                size: 18,
+                                color: Colors.teal.shade800,
+                              ),
                               const SizedBox(width: 10),
                               const Expanded(
                                 child: Text(
-                                  'Mode démonstration : saisissez n\'importe quel identifiant et mot de passe (min. 4 car.) pour accéder à l\'application.',
+                                  'Saisissez l’email et le mot de passe enregistrés dans la table account.',
                                   style: TextStyle(
                                     fontSize: 11.5,
                                     color: Color(0xFF115E59),
