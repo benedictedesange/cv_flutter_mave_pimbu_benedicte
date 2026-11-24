@@ -1,3 +1,8 @@
+# VIDEO CV Mobile Flutter - MAVE PIMBU BENEDICTE
+[tp2.zip](https://github.com/user-attachments/files/35338139/tp2.zip)
+
+
+
 # CV Mobile Flutter - MAVE PIMBU BENEDICTE
 
 Application mobile moderne développée avec **Flutter** présentant le profil professionnel, le parcours académique, le cercle familial et les coordonnées de **MAVE PIMBU BENEDICTE**.
